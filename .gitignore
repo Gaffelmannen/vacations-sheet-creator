@@ -1,4 +1,5 @@
 vacation-lists-aecd2c47a267.json
+vacation-lists-66c7d9f6cb1e.json
 
 # Dowwnload this file using PowerShell v3 under Windows with the following comand:
 # Invoke-WebRequest https://gist.githubusercontent.com/kmorcinek/2710267/raw/ -OutFile .gitignore

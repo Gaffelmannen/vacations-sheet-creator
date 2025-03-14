@@ -1,29 +1,34 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
+import yaml
 import pygsheets 
 import calendar
 from dateutil.parser import parse
 
-file_credentials = "vacation-lists-aecd2c47a267.json"
+file_credentials = "credentials/vacation-lists-66c7d9f6cb1e.json"
 file_workbook="vacations-sheet"
 file_sheet="2025"
 
-red_days = {
-    "2025-01-01": "New Year's Day",
-    "2025-01-06": "Epiphany",
-    "2025-04-18": "Good Friday",
-    "2025-04-20": "Easter Sunday",
-    "2025-04-21": "Easter Monday",
-    "2025-05-01": "May Day",
-    "2025-05-29": "Ascension Day",
-    "2025-06-06": "National Day",
-    "2025-06-21": "Midsummer Day",
-    "2025-11-01": "All Saints' Day",
-    "2025-12-25": "Christmas Day",
-    "2025-12-26": "Boxing Day",
-    "2025-12-31": "New Year's Eve"
-}
+def read_from_config(selected_year):
+    holidays = {}
+    with open("config.yml", "r") as file:
+        red_days = yaml.safe_load(file)
+
+    days = red_days["red_days"][selected_year]
+
+    if days:
+        #print(f"Holidays for {selected_year}:")
+        for date, name in days.items():
+            #print(f"  {selected_year}-{date}: {name}")
+            holidays[f"{selected_year}-{date}"] = f"{name}"
+    else:
+        print(f"No holidays found for {selected_year}.")
+        sys.exit(-1)
+
+    #print(holidays)
+
+    return holidays
 
 def convert_to_datetime(input_str, parserinfo=None):
     return parse(input_str, parserinfo=parserinfo)
@@ -36,7 +41,7 @@ def find_first_integer(s):
             break
     return first_integer_position
     
-def add_data():
+def add_data(red_days):
     print("Add data")
 
     client = pygsheets.authorize(service_account_file=file_credentials)
@@ -125,4 +130,5 @@ def apply_conditional_formatting():
 
 
 if __name__ == "__main__":
-    add_data()
+    red_days_for_the_year = read_from_config(selected_year=file_sheet)
+    add_data(red_days=red_days_for_the_year)
